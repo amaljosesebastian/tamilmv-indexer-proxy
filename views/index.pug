@@ -1,0 +1,52 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title=title
+        link(rel="preconnect", href="https://fonts.googleapis.com")
+        link(rel="preconnect", href="https://fonts.gstatic.com", crossorigin)
+        link(href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap", rel="stylesheet")
+        style
+            include styles.css
+    body
+        .dashboard-container
+            .glass-card
+                .header
+                    .logo-icon 🪐
+                    h1=message
+                    p.subtitle Torznab RSS Feed Scrapper Proxy
+                
+                if(savedMessage)
+                    .success-toast
+                        span.toast-icon ✓
+                        span.toast-text=savedMessage
+                
+                form(action="/", method="POST")
+                    .input-group
+                        label(for="name") 🔗 TamilMV Proxy URL
+                        .input-wrapper
+                            input#name(type="url", name="tamilmv_url", class="fields", required, value=tamilmv_url, placeholder="https://www.1tamilmv.cards")
+                        .helper-row
+                            a(href="https://torrents-proxy.com/tamilmv/", target="_blank", class="latest-proxy-link") ⚡ Get Latest Proxy List
+                    
+                    .input-group
+                        label Custom Search Toggle
+                        .radio-group
+                            label.radio-label
+                                input#custom_search_toggle(type="radio", name="custom_search_toggle", value="1", checked=customSearchOn)
+                                span.radio-custom
+                                span.radio-text Enabled
+                            label.radio-label
+                                input#custom_search_toggle_1(type="radio", name="custom_search_toggle", value="0", checked=customSearchOff)
+                                span.radio-custom
+                                span.radio-text Disabled
+                    
+                    .input-group
+                        label(for="custom_search") 🔍 Custom Search Keyword
+                        .input-wrapper
+                            input#custom_search(type="text", name="custom_search", required, class="fields", value=custom_search_keyword, placeholder="movie")
+                        .helper-row
+                            a(href=tryUrl, target="_blank", class="try-link") 🚀 Try Current Query
+                    
+                    button.btn-submit(type="submit") Save Configuration
