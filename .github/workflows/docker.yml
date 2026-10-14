@@ -31,7 +31,7 @@ jobs:
         with:
           images: |
             ghcr.io/${{ github.repository }}
-            docker.io/YOUR_DOCKERHUB_USERNAME/tamilmv-indexer-proxy
+            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/tamilmv-indexer-proxy
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=semver,pattern={{version}}
