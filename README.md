@@ -201,7 +201,8 @@ http://<your-server-ip>:5000/
 
 Here you can check or change the **TamilMV URL**. TamilMV changes its domain often, so if searches suddenly stop working, this is the first place to look.
 
-<!-- SCREENSHOT: settings page -->
+<img width="1200" height="825" alt="image" src="https://github.com/user-attachments/assets/6b9584a3-e4ad-479a-b6e6-b1b27a6bb5a5" />
+
 <!-- ![Settings page](docs/images/settings-page.png) -->
 
 > **Note:** the `TAMILMV_URL` environment variable is only used the **first time** the database is created. After that, change the URL on the settings page.
@@ -212,8 +213,7 @@ Here you can check or change the **TamilMV URL**. TamilMV changes its domain oft
 
 In Prowlarr go to **Indexers → Add Indexer**, search for **Generic Torznab**, and select it.
 
-<!-- SCREENSHOT: choosing Generic Torznab -->
-<!-- ![Prowlarr: choose Generic Torznab](docs/images/prowlarr-01-generic-torznab.png) -->
+<img width="1504" height="1062" alt="image" src="https://github.com/user-attachments/assets/8386f44e-deb7-4d86-a068-c1a9a1fb5dfa" />
 
 Fill in the form:
 
@@ -226,8 +226,7 @@ Fill in the form:
 | **API Key** | anything, for example `x` (the proxy doesn't check it) |
 | **Categories** | tick **Movies (2000)** |
 
-<!-- SCREENSHOT: filled-in indexer form -->
-<!-- ![Prowlarr: indexer settings](docs/images/prowlarr-02-indexer-settings.png) -->
+<img width="738" height="1012" alt="image" src="https://github.com/user-attachments/assets/246da8ed-0ea6-4766-8935-29b1fff7b205" />
 
 Click **Test**. The first test can take 10 to 30 seconds because the proxy has to fetch pages from TamilMV. When it shows a green check, click **Save**.
 
@@ -235,14 +234,28 @@ Click **Test**. The first test can take 10 to 30 seconds because the proxy has t
 <!-- ![Prowlarr: test succeeded](docs/images/prowlarr-03-test-ok.png) -->
 
 **Try a search:** open **Search** in Prowlarr, pick TamilMV, and search for a movie title.
+<img width="1370" height="847" alt="image" src="https://github.com/user-attachments/assets/ff41c0ea-8fed-4256-931a-37431a5ef424" />
 
 <!-- SCREENSHOT: search results in Prowlarr -->
 <!-- ![Prowlarr: search results](docs/images/prowlarr-04-search-results.png) -->
 
 ---
 
-## Add to Radarr
+## Add to Radarr (Standalone)
+### Add from Settings
+In Radarr open **Settings → Indexers**. Click '+' button to add Indexer. Select Tornzab
+<img width="1438" height="1106" alt="image" src="https://github.com/user-attachments/assets/ec3547f9-de17-4770-9f7a-2a410d963c67" />
+| Field | Value |
+|---|---|
+| **Name** | `TamilMV` |
+| **Enable RSS** | Off (recommended, see [limitations](#known-limitations)) |
+| **URL** | `http://tamilmv-indexer-proxy:5000` if Prowlarr runs in the same Docker network.<br>Otherwise `http://<your-server-ip>:5000`. Do **not** use `localhost` if Prowlarr runs in Docker. |
+| **API Key** | anything, for example `x` (the proxy doesn't check it) |
+| **Categories** | tick **Movies (2000)** 
+<img width="754" height="849" alt="image" src="https://github.com/user-attachments/assets/51f61f02-c6c1-4f32-bbca-be94979959c0" />
 
+
+## Add to Radarr if Prowlarr exists
 ### Step 1: Connect Prowlarr to Radarr
 
 If you haven't already, in Prowlarr go to **Settings → Apps → Add (+) → Radarr**:
@@ -267,19 +280,10 @@ In Radarr open **Settings → Indexers**. You should see **TamilMV (Prowlarr)** 
 
 ### Step 3: Make sure Radarr has a download client
 
-Radarr needs a download client (qBittorrent, Transmission, Deluge and so on) in **Settings → Download Clients** to actually fetch what it finds.
-
-<!-- SCREENSHOT: Radarr download client -->
-<!-- ![Radarr: download client](docs/images/radarr-03-download-client.png) -->
-
-> **Download client behind a VPN container (gluetun)?** If the client shares gluetun's network, use `gluetun` as the host in Radarr and add it to the client's host whitelist.
-
 ### Step 4: Test with an interactive search
 
 Open any movie in Radarr, click **Search** (the magnifier icon with a person), and look for TamilMV results.
-
-<!-- SCREENSHOT: Radarr interactive search -->
-<!-- ![Radarr: interactive search](docs/images/radarr-04-interactive-search.png) -->
+<img width="1710" height="957" alt="image" src="https://github.com/user-attachments/assets/93b03645-1f63-4b82-9849-94e65cb9a56f" />
 
 If results appear, you're done.
 
@@ -362,6 +366,7 @@ volumes:
 
 | Problem | What to try |
 |---|---|
+| Radarr rejects Movie Releases because of Hardcorded Subs | Under Radarr Settings > Indexers > Advanced Options > Check Mark 'Allow Hardcoded Subs' Detected Hardcoded subs will be automatically downloaded |
 | Prowlarr **Test** fails with a connection error | Check the URL. Inside Docker use the container name (`http://tamilmv-indexer-proxy:5000`), not `localhost`. Make sure both containers share a Docker network. |
 | Test fails or times out | The proxy fetches pages from TamilMV, so it can be slow. Check `docker logs tamilmv-indexer-proxy`. If you see `521` or connection errors, the TamilMV domain has probably changed. Update it on the settings page. |
 | Searches return nothing | TamilMV's domain may have changed, or its page layout may have changed. Check the logs. |
