@@ -13,11 +13,20 @@ export function hasNonEnglishCharacters(string_) {
 	return regex.test(string_);
 }
 
+// Radarr only understands "2160p" as 4K, so rewrite "4K" / "UHD" when no 2160p is present
+function normalizeResolution(title) {
+	if (/\b2160p\b/i.test(title)) {
+		return title;
+	}
+
+	return title.replace(/\b(?:4k|uhd)\b/i, '2160p');
+}
+
 function cleanTitle(raw) {
-	return raw
+	return normalizeResolution(raw
 		.replace(/^www\.[^\s-]+\s*-\s*/i, '')
 		.replace(/\s-\s/, ' ')
-		.trim();
+		.trim());
 }
 
 export async function searchMovies(keyword) {
