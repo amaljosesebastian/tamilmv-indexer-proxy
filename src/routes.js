@@ -9,31 +9,16 @@ import {
 	hasNonEnglishCharacters,
 } from './scraper.js';
 import {createRssFeed, torznabTest, noTopics} from './torznab.js';
-import {
-	getSearchTerms,
-	matchesAllTerms,
-	buildSearchCandidates,
-} from './search.js';
 
 const router = new express.Router();
 
-// Try each search in order. Prefer results whose titles contain every important word.
-const searchWithFallback = async (candidates, terms) => {
-	let fallback = [];
-	for (const candidate of candidates) {
-		// eslint-disable-next-line no-await-in-loop
-		const results = await searchMovies(candidate);
-		const matched = results.filter(result => matchesAllTerms(result.title, terms));
-		if (matched.length > 0) {
-			return matched;
-		}
-
-		if (fallback.length === 0) {
-			fallback = results;
-		}
+const processKeyword = key => {
+	const searchKey = key?.toString()?.trim()?.split(' ')?.[0] || '';
+	if (searchKey) {
+		return encodeURIComponent(searchKey);
 	}
 
-	return fallback;
+	return '';
 };
 
 const slugify = s => {
@@ -127,24 +112,18 @@ router.get('/api', async (request, response) => {
 	const baseUrl = request.protocol + '://' + request.get('host');
 	const testMode = request.query.t === 'caps';
 
-	// Treat curly apostrophes like normal ones so "It\u2019s" is not seen as non-English
-	const rawQuery = String(request.query.q || '').replace(/[\u2018\u2019\u00B4`]/g, '\'');
-	const useCustom = !testMode && Boolean(configs.custom_search);
-	const terms = useCustom ? [] : getSearchTerms(rawQuery);
-	const candidates = buildSearchCandidates(
-		terms,
-		useCustom ? configs.custom_search_keyword : '',
-	);
-	const keyword = candidates[0];
-	console.log(`[v${VERSION}] Terms:`, terms, 'Searches:', candidates);
+	const keyword = (!testMode && configs.custom_search)
+		? encodeURIComponent(configs.custom_search_keyword)
+		: processKeyword(request.query.q) || 'drishyam 4';
+	console.log(`[v${VERSION}] Keyword:`, keyword);
 
 	let rssFeed;
 	try {
-		if (!testMode && hasNonEnglishCharacters(rawQuery)) {
+		if (!testMode && hasNonEnglishCharacters(request.query.q)) {
 			console.log(`[v${VERSION}] Skipping searchMovies because non-English characters are detected in the query...`);
 			rssFeed = await noTopics(baseUrl);
 		} else {
-			const searchResults = await searchWithFallback(candidates, terms);
+			const searchResults = await searchMovies(keyword);
 			try {
 				if (testMode) {
 					rssFeed = await torznabTest();
