@@ -73,6 +73,8 @@ export async function createRssFeed(baseUrl, magnetInfo, request) {
 										},
 									},
 									{comments: post.name},
+									{category: 2000},
+									{'torznab:attr': {_attr: {name: 'category', value: 2000}}},
 									{'torznab:attr': {_attr: {name: 'magneturl', value: post.magnet}}},
 									{
 										'torznab:attr': {_attr: {name: 'seeders', value: 10}},
